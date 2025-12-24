@@ -1,167 +1,237 @@
 
 
-1. **Business Problem:** Why the project exists and what it solves.
-2. **Data Sources:** What datasets are used and their purpose.
-3. **Modeling Approach:** High-level pipeline from preprocessing → feature engineering → balancing → model training → explainability.
-4. **Step-by-step Setup & Run Instructions:** Include activating the virtual environment, installing dependencies, and running the scripts/notebooks in order.
-5. **Repo Structure & Task Mapping:** Show where each major task is implemented (e.g., Task-1 → data_processing.py & smote.py).
-
----
-
-I can help you **revamp your README** so it addresses all of this and would score full credit. Here’s a **proposed version**:
-
 ```markdown
 # Fraud Detection Project
 
 **Author:** Dereje Derib  
-**Project:** 10 Academy – AI Mastery (Week 5 & 6 Challenge)  
+**Challenge:** 10 Academy – Fraud Detection  
 **Date:** December 2025  
 
 ---
 
-## Business Problem
+## 🧠 Business Problem
 
-Fraudulent transactions in e-commerce and banking result in financial loss and reputational damage. This project aims to **improve fraud detection** using machine learning by analyzing transaction patterns, engineering meaningful features, and handling highly imbalanced datasets to reduce both false positives and false negatives.
+Fraudulent transactions cause financial loss and damage customer trust.  
+This project builds Machine Learning models to detect fraud in:
 
----
+- 🛒 E-commerce transactions
+- 💳 Credit card transactions
 
-## Data Sources
+Key objectives:
 
-1. **fraud_data.csv** – E-commerce transactions with user, device, purchase, and IP information.  
-2. **credit_card.csv** – Bank credit card transactions with anonymized features (V1–V28) and transaction amounts.  
-3. **ip.csv** – IP-to-country mapping for geolocation analysis.  
-
-All raw datasets are stored in `data/raw`.
-
----
-
-## Modeling Approach
-
-The project pipeline consists of the following stages:
-
-1. **Data Processing (`data_processing.py`):**  
-   - Load datasets  
-   - Handle missing values, duplicates, and incorrect types  
-   - Save cleaned datasets in `data/processed`
-
-2. **Exploratory Data Analysis (EDA) (`notebooks/eda-*.ipynb`):**  
-   - Visualize distributions, correlations, and class imbalance  
-   - Analyze temporal and behavioral patterns
-
-3. **Feature Engineering (`feature_engineering.py`):**  
-   - Generate derived features like `hour_of_day`, `day_of_week`, `time_since_signup`, transaction frequency, etc.  
-
-4. **Handling Class Imbalance (`smote.py`):**  
-   - Apply SMOTE oversampling to balance minority classes  
-   - Save balanced datasets in `data/processed`
-
-5. **Demonstration of SMOTE + Random Forest (`smote_rf.py`):**  
-   - Train a Random Forest classifier on the balanced dataset  
-   - Evaluate performance metrics to show the impact of SMOTE  
-
-6. **Modeling and Explainability (future tasks):**  
-   - Train final models  
-   - Use SHAP for interpreting predictions  
+- Detect fraudulent activities early  
+- Minimize false positives to avoid disturbing legitimate users  
+- Handle extreme class imbalance effectively  
+- Build interpretable and production-ready models  
 
 ---
 
-## Repository Structure & Task Mapping
+## 📂 Data Sources
+
+| Dataset | Description |
+|--------|------------|
+| fraud_data.csv | E-commerce transaction dataset |
+| credit_card.csv | Bank credit card transactions (anonymized PCA features) |
+| ip_data.csv | IP → Country mapping |
+
+All **raw datasets** are stored in:  
+```
+
+data/raw
 
 ```
 
-fraud-detection/
+---
+
+## 🚀 Project Pipeline
+
+### ✅ Task-1 — Data Preparation & Feature Engineering
+1️⃣ **Data Processing (`src/data_processing.py`)**
+- Handle missing values  
+- Remove duplicates  
+- Correct inconsistent formats  
+- Save cleaned datasets → `data/processed`
+
+2️⃣ **Feature Engineering (`src/feature_engineering.py`)**
+- Time-based features (hour, weekday)
+- Behavioural & frequency features
+- Combined geolocation insights
+- Final engineered datasets saved as:
+```
+
+fraud_data_final.csv
+creditcard_final.csv
+
+```
+
+---
+
+## ✅ Task-2 — Model Training & Evaluation
+
+Two independent modeling pipelines are implemented.
+
+---
+
+### 🛒 Ecommerce Fraud Modeling
+Script:
+```
+
+src/modelling/train_ecommerce.py
+
+```
+
+Models Trained:
+- Logistic Regression
+- Random Forest
+- XGBoost
+- LightGBM
+
+Outputs:
+- Precision, Recall, F1-Score, AUC-PR
+- Best model saved:
+```
+
+models/ecommerce_best_model.pkl
+
+```
+
+---
+
+### 💳 Credit Card Fraud Modeling
+Script:
+```
+
+src/modelling/train_creditcard.py
+
+```
+
+Models Trained:
+- Logistic Regression  
+- Random Forest  
+- XGBoost  
+- LightGBM  
+- Stratified K-Fold Cross-Validation (RandomForest)
+
+Outputs:
+- Model comparison metrics  
+- Cross-validation results  
+- Best model saved:
+```
+
+models/creditcard_best_model.pkl
+
+```
+
+---
+
+## 📊 Evaluation Strategy
+
+Because the datasets are highly imbalanced, we prioritize:
+
+- **Recall** → catch as many frauds as possible  
+- **Precision** → reduce false alarms  
+- **F1-Score** → balanced performance  
+- **AUC-PR (primary metric)** → best suited for imbalanced datasets  
+
+---
+
+## 🗂 Repository Structure
+
+```
+
+fraud_detection/
 ├── data/
-│   ├── raw/               # Original datasets
-│   └── processed/         # Cleaned and SMOTE-balanced datasets
+│   ├── raw/
+│   └── processed/
+├── models/
 ├── notebooks/
-│   ├── eda-fraud-data.ipynb
+│   ├── eda-fraud.ipynb
 │   ├── eda-creditcard.ipynb
-│   ├── feature-engineering.ipynb
-│   ├── modeling.ipynb
-│   └── shap-explainability.ipynb
+│   └── modeling.ipynb
 ├── src/
-│   ├── data_processing.py  # Task-1 preprocessing
-│   ├── feature_engineering.py # Task-1/Task-2 feature derivation
-│   ├── smote.py            # Task-1 SMOTE oversampling
-│   └── smote_rf.py         # Demo: SMOTE + Random Forest
-├── models/                  # Saved model artifacts
-├── scripts/                 # Optional helper scripts
+│   ├── data_processing.py
+│   ├── feature_engineering.py
+│   ├── utils/
+│   │   └── balancing_utils.py
+│   └── modelling/
+│       ├── train_ecommerce.py
+│       └── train_creditcard.py
 ├── requirements.txt
 └── README.md
 
-````
-
-**Mapping Tasks to Files:**
-
-- **Task-1:** EDA, preprocessing, SMOTE → `data_processing.py`, `smote.py`, EDA notebooks  
-- **Task-2:** Feature engineering, model training → `feature_engineering.py`, `modeling.ipynb`  
-- **Task-3:** Model explainability → `shap-explainability.ipynb`  
+```
 
 ---
 
-## Setup & Run Instructions
+## ▶️ How to Run
 
-1. **Clone repository:**
+### 1️⃣ Create & Activate Virtual Environment
+```
 
-```bash
-git clone <repo-url>
-cd fraud-detection
-````
-
-2. **Create and activate virtual environment:**
-
-```bash
 python -m venv .venv
-.\.venv\Scripts\activate   # Windows
+..venv\Scripts\activate   # Windows
 source .venv/bin/activate  # Linux/Mac
+
 ```
 
-3. **Install dependencies:**
+### 2️⃣ Install Dependencies
+```
 
-```bash
 pip install -r requirements.txt
+
 ```
 
-4. **Run preprocessing:**
+### 3️⃣ Run Data Processing
+```
 
-```bash
 python -m src.data_processing
+
 ```
 
-5. **Apply SMOTE to balance datasets:**
-
-```bash
-python -m src.smote
+### 4️⃣ Run Feature Engineering
 ```
 
-6. **Run feature engineering (after preprocessing):**
-
-```bash
 python -m src.feature_engineering
+
 ```
 
-7. **Optional SMOTE + Random Forest demo:**
-
-```bash
-python -m src.smote_rf
+### 5️⃣ Train Ecommerce Models
 ```
 
-8. **EDA and modeling notebooks:**
+python -m src.modelling.train_ecommerce
 
-* Open Jupyter notebooks in `notebooks/` for visualizations, feature engineering, and model building.
+```
+
+### 6️⃣ Train Credit Card Models
+```
+
+python -m src.modelling.train_creditcard
+
+```
 
 ---
 
-## Notes
+## 📌 Notes
 
-* Raw datasets are gitignored; only processed datasets are tracked.
-* Modular structure allows easy testing and future extension.
-* All steps include exception handling and logging to ensure reproducibility.
+- Raw datasets are not pushed to GitHub  
+- Modular design enables easy extension  
+- SMOTE utilities exist and will be explored further  
+- Logs and saved models ensure reproducibility  
 
 ---
 
-## License
+## 📍 Project Status
 
-Educational use for 10 Academy AI Mastery Challenge.
+✔️ Task-1 Completed — Cleaning + Feature Engineering  
+✔️ Task-2 Completed — Modeling Pipelines  
+⬜ Task-3 — Explainability (SHAP)  
+⬜ Deployment  
+⬜ Final Reporting  
 
-```
+---
+
+## 📜 License
+Educational use under 10 Academy Program.
+
+
+
